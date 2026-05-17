@@ -10,7 +10,7 @@ const envSchema = z.object({
 
   DB_PATH: z.string().min(1).default('/app/data/hub.db'),
 
-  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
+  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   LOG_PRETTY: z.coerce.boolean().default(false),
 
   JWT_SECRET: z.string().min(32, 'JWT_SECRET deve ter no mínimo 32 caracteres'),
@@ -21,6 +21,9 @@ const envSchema = z.object({
   SESSION_SECRET: z.string().min(32, 'SESSION_SECRET deve ter no mínimo 32 caracteres'),
   CSRF_SECRET: z.string().min(32, 'CSRF_SECRET deve ter no mínimo 32 caracteres'),
   ENCRYPTION_KEY: z.string().min(32, 'ENCRYPTION_KEY deve ter no mínimo 32 caracteres'),
+
+  DOMAIN: z.string().min(1).default('localhost'),
+  ADMIN_EMAIL: z.string().email().default('admin@localhost'),
 
   CORS_ORIGINS: z.string().default('http://localhost'),
 

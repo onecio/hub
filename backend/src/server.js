@@ -1,5 +1,7 @@
 import Fastify from 'fastify';
 import { config } from './config/index.js';
+import { getDb } from './db/connection.js';
+import { runMigrations } from './db/migrate.js';
 
 const app = Fastify({
   logger: {
@@ -27,7 +29,11 @@ app.get('/health', { logLevel: 'warn' }, async (_req, reply) => {
 });
 
 app.get('/health/ready', { logLevel: 'warn' }, async (_req, reply) => {
-  // Fase 2: verificar conectividade com DB antes de retornar ok
+  const db = getDb();
+  const row = db.prepare('SELECT 1 AS ok').get();
+  if (row?.ok !== 1) {
+    return reply.status(503).send({ status: 'error', message: 'database unavailable' });
+  }
   reply.send({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -44,6 +50,7 @@ app.get('/health/ready', { logLevel: 'warn' }, async (_req, reply) => {
 
 const start = async () => {
   try {
+    runMigrations(getDb());
     await app.listen({ port: config.PORT, host: config.HOST });
   } catch (err) {
     app.log.error(err);

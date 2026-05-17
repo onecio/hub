@@ -150,7 +150,7 @@ hub-institucional/
 | # | Módulo | Status |
 |---|--------|--------|
 | 1 | Scaffold + Docker + ESLint/Prettier + design tokens | ✅ Completo |
-| 2 | DB connection + migrations 001_init | Pendente |
+| 2 | DB connection + migrations 001–006 + seeds + testes | ✅ Completo |
 | 3 | Auth + RBAC + MFA + middlewares de segurança | Pendente |
 | 4 | Catálogo de recursos + frontend principal | Pendente |
 | 5 | Painel administrativo | Pendente |
