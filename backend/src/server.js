@@ -1,7 +1,20 @@
 import Fastify from 'fastify';
+import helmet from '@fastify/helmet';
+import cors from '@fastify/cors';
+import rateLimit from '@fastify/rate-limit';
+import cookie from '@fastify/cookie';
+import csrfProtection from '@fastify/csrf-protection';
 import { config } from './config/index.js';
 import { getDb } from './db/connection.js';
 import { runMigrations } from './db/migrate.js';
+import { securityHeadersMiddleware } from './middlewares/securityHeaders.js';
+import { authMiddleware } from './middlewares/auth.js';
+import { auditLoggerMiddleware } from './middlewares/auditLogger.js';
+import { rateLimitMiddleware } from './middlewares/rateLimit.js';
+import { registerAuthRoutes } from './modules/auth/index.js';
+import { registerUserRoutes } from './modules/users/index.js';
+import { registerAuditRoutes } from './modules/audit/index.js';
+import { randomUUID } from 'crypto';
 
 const app = Fastify({
   logger: {
@@ -14,13 +27,36 @@ const app = Fastify({
     }),
   },
   // UUID v4 por request para correlação em logs/audit
-  genReqId: () => crypto.randomUUID(),
+  genReqId: () => randomUUID(),
   requestIdHeader: 'x-request-id',
   requestIdLogLabel: 'requestId',
   trustProxy: true,
   // Impede consumo excessivo de memória em bodies grandes
   bodyLimit: 5_242_880, // 5 MB padrão; ferramentas de PDF sobrescrevem para 25 MB
 });
+
+// ── Plugins Fastify ──────────────────────────────────────────────────────────
+
+await app.register(helmet, { contentSecurityPolicy: false });
+await app.register(cors, {
+  origin: config.CORS_ORIGINS.split(',').map(o => o.trim()),
+});
+await app.register(rateLimit, {
+  max: config.RATE_LIMIT_MAX,
+  timeWindow: `${config.RATE_LIMIT_WINDOW_MS}ms`,
+  skip: (request) => request.url.startsWith('/health'),
+});
+await app.register(cookie);
+await app.register(csrfProtection, {
+  cookieKey: '__Host-csrf',
+});
+
+// ── Middlewares Customizados ─────────────────────────────────────────────────
+
+securityHeadersMiddleware(app);
+authMiddleware(app);
+auditLoggerMiddleware(app);
+rateLimitMiddleware(app);
 
 // ── Healthcheck (sem autenticação, sem rate limit) ────────────────────────────
 
@@ -37,8 +73,13 @@ app.get('/health/ready', { logLevel: 'warn' }, async (_req, reply) => {
   reply.send({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// ── Plugins, middlewares e módulos serão registrados aqui nas próximas fases ──
-// Fase 3: auth, RBAC, MFA, rate-limit, CSRF, securityHeaders, auditLogger
+// ── Módulos (Fase 3) ─────────────────────────────────────────────────────────
+
+await app.register(registerAuthRoutes, { prefix: '/api/v1/auth' });
+await app.register(registerUserRoutes, { prefix: '/api/v1/users' });
+await app.register(registerAuditRoutes, { prefix: '/api/v1/audit' });
+
+// ── Módulos de Fases Futuras ────────────────────────────────────────────────
 // Fase 4: resources, categories, favorites, history
 // Fase 5: admin
 // Fase 6: monitoring
