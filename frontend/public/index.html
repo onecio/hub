@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--
+    CSP meta tag como camada extra de defesa no frontend.
+    O header HTTP definitivo (com nonce dinâmico) é definido pelo backend (Fase 3).
+    O Caddy aplica a versão estática para assets servidos diretamente.
+  -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'">
+  <title>HUB Institucional | CADE</title>
+
+  <!-- Fase 5: preload de fontes self-hosted (Inter, DM Sans WOFF2) -->
+  <link rel="stylesheet" href="../src/css/main.css">
+</head>
+<body>
+  <!-- Skip link para acessibilidade (WCAG 2.1 AA / e-MAG 3.1) -->
+  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
+  <header role="banner" aria-label="Cabeçalho principal">
+    <!-- Fase 5: componente hub-header (logo, busca global, avatar) -->
+  </header>
+
+  <main id="main-content" role="main">
+    <div class="hub-skeleton" role="status" aria-label="Carregando aplicação" aria-live="polite" aria-busy="true">
+      <span class="sr-only">Carregando...</span>
+    </div>
+  </main>
+
+  <footer role="contentinfo" aria-label="Rodapé institucional">
+    <!-- Fase 5: links LGPD, acessibilidade, versão, status geral -->
+  </footer>
+
+  <script type="module" src="../src/js/app.js"></script>
+</body>
+</html>

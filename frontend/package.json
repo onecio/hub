@@ -1,0 +1,26 @@
+{
+  "name": "hub-institucional-frontend",
+  "version": "0.1.0",
+  "description": "Frontend do HUB Institucional CADE — Vanilla JS + Vite",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.7.0",
+    "eslint": "^9.7.0",
+    "globals": "^15.8.0",
+    "prettier": "^3.3.3",
+    "vite": "^5.3.4"
+  }
+}

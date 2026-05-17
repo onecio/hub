@@ -1,0 +1,59 @@
+# ── Segredos e configurações locais ──────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Dependências ──────────────────────────────────────────────────────────────
+node_modules/
+**/node_modules/
+
+# ── Builds ────────────────────────────────────────────────────────────────────
+dist/
+build/
+.vite/
+
+# ── Banco de dados local ──────────────────────────────────────────────────────
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# ── Uploads e temporários ─────────────────────────────────────────────────────
+uploads/
+tmp/
+*.tmp
+
+# ── Backups locais ────────────────────────────────────────────────────────────
+backups/
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Cobertura de testes ───────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── Docker (volumes locais gerados) ───────────────────────────────────────────
+caddy_data/
+caddy_config/
+db_data/
+
+# ── IDEs e SO ─────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ── Diagnóstico e debug ───────────────────────────────────────────────────────
+*.heapsnapshot
+*.cpuprofile

@@ -1,0 +1,81 @@
+{
+    # Endereço do admin para notificações Let's Encrypt
+    email {$ADMIN_EMAIL}
+    # Admin API desabilitada em produção — habilitar apenas para debug local
+    admin off
+}
+
+{$DOMAIN} {
+    # Remove fingerprints do servidor
+    header -Server
+    header -X-Powered-By
+
+    # ── Cabeçalhos de segurança obrigatórios (SPEC §3.1) ──────────────────────
+    header {
+        # HSTS: 2 anos, subdomínios, preload
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+
+        # Previne MIME-sniffing
+        X-Content-Type-Options "nosniff"
+
+        # Bloqueia embedding em frames externos
+        X-Frame-Options "DENY"
+
+        # Limita informações de referência cross-origin
+        Referrer-Policy "strict-origin-when-cross-origin"
+
+        # Desabilita APIs sensíveis do navegador
+        Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+
+        # Isolamento de contexto de navegação
+        Cross-Origin-Opener-Policy "same-origin"
+        Cross-Origin-Resource-Policy "same-origin"
+        Cross-Origin-Embedder-Policy "require-corp"
+
+        # CSP base (sem unsafe-inline/unsafe-eval).
+        # O backend injeta CSP com nonce dinâmico nas respostas de rota (Fase 3).
+        # Este header cobre assets estáticos servidos pelo Caddy/nginx.
+        Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+    }
+
+    # ── Rotas ──────────────────────────────────────────────────────────────────
+
+    # API e saúde → backend
+    handle /api/* {
+        reverse_proxy backend:3000
+    }
+
+    handle /health {
+        reverse_proxy backend:3000
+    }
+
+    handle /health/ready {
+        reverse_proxy backend:3000
+    }
+
+    # Encurtador de links → backend
+    handle /l/* {
+        reverse_proxy backend:3000
+    }
+
+    # Métricas Prometheus — restrito à rede interna
+    handle /metrics {
+        @external {
+            not remote_ip 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 127.0.0.1
+        }
+        respond @external "Forbidden" 403
+        reverse_proxy backend:3000
+    }
+
+    # Frontend estático → nginx
+    handle {
+        reverse_proxy frontend:80
+    }
+
+    # ── Logs ───────────────────────────────────────────────────────────────────
+    log {
+        output stdout
+        format json
+        level INFO
+    }
+}
