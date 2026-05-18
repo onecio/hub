@@ -1,38 +1,65 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!--
-    CSP meta tag como camada extra de defesa no frontend.
-    O header HTTP definitivo (com nonce dinâmico) é definido pelo backend (Fase 3).
-    O Caddy aplica a versão estática para assets servidos diretamente.
-  -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="description" content="HUB Institucional CADE - Acesso centralizado a sistemas, recursos e ferramentas">
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'">
-  <title>HUB Institucional | CADE</title>
 
-  <!-- Fase 5: preload de fontes self-hosted (Inter, DM Sans WOFF2) -->
-  <link rel="stylesheet" href="../src/css/main.css">
+  <title>HUB Institucional CADE</title>
+
+  <link rel="stylesheet" href="/src/css/main.css">
+  <link rel="stylesheet" href="/src/css/components.css">
+
+  <!-- Preload fonts -->
+  <link rel="preload" as="font" href="/src/fonts/inter-regular.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="/src/fonts/dm-sans-regular.woff2" type="font/woff2" crossorigin>
 </head>
 <body>
-  <!-- Skip link para acessibilidade (WCAG 2.1 AA / e-MAG 3.1) -->
-  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
-
-  <header role="banner" aria-label="Cabeçalho principal">
-    <!-- Fase 5: componente hub-header (logo, busca global, avatar) -->
-  </header>
-
-  <main id="main-content" role="main">
-    <div class="hub-skeleton" role="status" aria-label="Carregando aplicação" aria-live="polite" aria-busy="true">
-      <span class="sr-only">Carregando...</span>
+  <noscript>
+    <div role="alert" class="noscript-warning">
+      Este site requer JavaScript ativado. Por favor, habilite JavaScript em seu navegador.
     </div>
+  </noscript>
+
+  <!-- Skip link para acessibilidade (WCAG 2.1 AA) -->
+  <a href="#main" class="skip-link">Pular para conteúdo principal</a>
+
+  <!-- Header -->
+  <hub-header id="header" role="banner" aria-label="Cabeçalho da aplicação"></hub-header>
+
+  <!-- Main content -->
+  <main id="main" role="main" class="main-container">
+    <!-- Hero section -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <h1 id="hero-title">Bem-vindo ao HUB Institucional</h1>
+        <p class="hero-subtitle">Acesso centralizado a sistemas, recursos e ferramentas da CADE</p>
+      </div>
+    </section>
+
+    <!-- Category filter -->
+    <section class="resources-section" aria-labelledby="resources-title">
+      <h2 id="resources-title" class="sr-only">Recursos por categoria</h2>
+      <category-filter id="categories" aria-label="Filtrar recursos por categoria"></category-filter>
+
+      <!-- Resource grid -->
+      <resource-grid id="resources" aria-label="Grade de recursos disponíveis"></resource-grid>
+    </section>
   </main>
 
-  <footer role="contentinfo" aria-label="Rodapé institucional">
-    <!-- Fase 5: links LGPD, acessibilidade, versão, status geral -->
-  </footer>
+  <!-- Login modal -->
+  <login-modal id="login-modal" aria-hidden="true" aria-label="Modal de autenticação"></login-modal>
 
-  <script type="module" src="../src/js/app.js"></script>
+  <!-- Web Components -->
+  <script src="/src/js/components/hub-header.js" type="module"></script>
+  <script src="/src/js/components/category-filter.js" type="module"></script>
+  <script src="/src/js/components/resource-grid.js" type="module"></script>
+  <script src="/src/js/components/login-modal.js" type="module"></script>
+
+  <!-- App bootstrap -->
+  <script src="/src/js/app.js" type="module"></script>
 </body>
 </html>

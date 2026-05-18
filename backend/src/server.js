@@ -14,6 +14,7 @@ import { rateLimitMiddleware } from './middlewares/rateLimit.js';
 import { registerAuthRoutes } from './modules/auth/index.js';
 import { registerUserRoutes } from './modules/users/index.js';
 import { registerAuditRoutes } from './modules/audit/index.js';
+import { registerResourceRoutes } from './modules/resources/index.js';
 import { randomUUID } from 'crypto';
 
 const app = Fastify({
@@ -73,14 +74,15 @@ app.get('/health/ready', { logLevel: 'warn' }, async (_req, reply) => {
   reply.send({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// ── Módulos (Fase 3) ─────────────────────────────────────────────────────────
+// ── Módulos (Fase 3 + Fase 4) ────────────────────────────────────────────────
 
 await app.register(registerAuthRoutes, { prefix: '/api/v1/auth' });
 await app.register(registerUserRoutes, { prefix: '/api/v1/users' });
 await app.register(registerAuditRoutes, { prefix: '/api/v1/audit' });
+await app.register(registerResourceRoutes, { prefix: '/api/v1' });
 
 // ── Módulos de Fases Futuras ────────────────────────────────────────────────
-// Fase 4: resources, categories, favorites, history
+// Fase 5: admin, history
 // Fase 5: admin
 // Fase 6: monitoring
 // Fase 7: tools, shortlinks
